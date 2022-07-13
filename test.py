@@ -36,6 +36,7 @@ import util.util as util
 
 
 if __name__ == '__main__':
+    print("TEST")
     opt = TestOptions().parse()  # get test options
     # hard-code some parameters for test
     opt.num_threads = 0   # test code only supports num_threads = 1
