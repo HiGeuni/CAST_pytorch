@@ -94,7 +94,7 @@ Existing deep neural network based approaches achieve reasonable results with th
 However, they do not leverage sufficient style information, which results in artifacts such as local distortions and style inconsistency.
 To address these issues, we propose to learn style representation directly from image features instead of their second-order statistics, by analyzing the similarities and differences between multiple styles and considering the style distribution.
 
-For details see the [paper](http://arxiv.org/abs/2205.09542)
+For details see the [paper](http://arxiv.org/abs/2205.09542) and the [video](https://youtu.be/3RG2yjLKTus)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -129,7 +129,7 @@ PyTorch 1.6 or above
 For packages, see requirements.txt.
 
   ```sh
-  pip install requirements.txt
+  pip install -r requirements.txt
   ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -149,9 +149,11 @@ For packages, see requirements.txt.
    
    Example directory hierarchy:
    ```sh
-      CAST-pytorch
+      CAST_pytorch
       |--- datasets
              |--- {datasets_name}
+                   |--- trainA
+                   |--- trainB
                    |--- testA
                    |--- testB
                    
@@ -164,8 +166,12 @@ For packages, see requirements.txt.
 
    Train the CAST model:
    ```sh
-   coming soon ...
+   python train.py --dataroot ./datasets/{dataset_name} --name {model_name}
    ```
+   
+   The pretrained style classification model is saved at ./models/style_vgg.pth.
+   
+   Google Drive: Check [here](https://drive.google.com/file/d/12JKlL6QsVWkz6Dag54K59PAZigFBS6PQ/view?usp=sharing)
    
 <p align="right">(<a href="#top">back to top</a>)</p>
 
