@@ -73,15 +73,15 @@ class CASTModel(BaseModel):
             self.visual_names += ['rec_A', 'rec_B']
             self.loss_names += ['cyc']
 
-        if self.isTrain:
-            self.model_names = ['AE','Dec_A', 'Dec_B', 'D', 'P_style', 'D_A', 'D_B']
-        else:  # during test time, only load G
-            self.model_names = ['AE','Dec_A', 'Dec_B']
+        # if self.isTrain:
+        self.model_names = ['AE','Dec_A', 'Dec_B', 'D', 'P_style', 'D_A', 'D_B']
+        # else:  # during test time, only load G
+            # self.model_names = ['AE','Dec_A', 'Dec_B']
 
         # define networks 
         
         vgg = net.vgg
-        vgg.load_state_dict(torch.load('models/vgg_normalised.pth'))
+        # vgg.load_state_dict(torch.load('models/style_vgg.pth'))
         vgg = nn.Sequential(*list(vgg.children())[:31]) 
         self.netAE = net.ADAIN_Encoder(vgg, self.gpu_ids)
         self.netDec_A = net.Decoder(self.gpu_ids)
@@ -89,25 +89,25 @@ class CASTModel(BaseModel):
         init_net(self.netAE, 'normal', 0.02, self.gpu_ids)  
         init_net(self.netDec_A, 'normal', 0.02, self.gpu_ids)  
         init_net(self.netDec_B, 'normal', 0.02, self.gpu_ids)
+        
+        # 102 line if문 안에서 가져옴(93~101)
+        style_vgg = MSP.vgg
+        style_vgg.load_state_dict(torch.load('models/style_vgg.pth'))
+        style_vgg = nn.Sequential(*list(style_vgg.children()))
+        self.netD = MSP.StyleExtractor(style_vgg, self.gpu_ids)  
+        self.netP_style = MSP.Projector(self.gpu_ids)
+        init_net(self.netD, 'normal', 0.02, self.gpu_ids) 
+        init_net(self.netP_style, 'normal', 0.02, self.gpu_ids)  
+        self.netD_A = networks.define_D(opt.output_nc, opt.ndf, opt.netD, opt.n_layers_D,
+                                        opt.crop_size, opt.feature_dim, opt.max_conv_dim,
+                                        opt.normD, opt.init_type, opt.init_gain, opt.no_antialias,
+                                        self.gpu_ids, opt)
+        self.netD_B = networks.define_D(opt.output_nc, opt.ndf, opt.netD, opt.n_layers_D,
+                                        opt.crop_size, opt.feature_dim, opt.max_conv_dim,
+                                        opt.normD, opt.init_type, opt.init_gain, opt.no_antialias,
+                                        self.gpu_ids, opt)  
 
-        if self.isTrain:       
-            style_vgg = MSP.vgg
-            style_vgg.load_state_dict(torch.load('models/style_vgg.pth'))
-            style_vgg = nn.Sequential(*list(style_vgg.children()))
-            self.netD = MSP.StyleExtractor(style_vgg, self.gpu_ids)  
-            self.netP_style = MSP.Projector(self.gpu_ids)  
-            init_net(self.netD, 'normal', 0.02, self.gpu_ids) 
-            init_net(self.netP_style, 'normal', 0.02, self.gpu_ids)
-            
-            self.netD_A = networks.define_D(opt.output_nc, opt.ndf, opt.netD, opt.n_layers_D,
-                                            opt.crop_size, opt.feature_dim, opt.max_conv_dim,
-                                            opt.normD, opt.init_type, opt.init_gain, opt.no_antialias,
-                                            self.gpu_ids, opt)
-            self.netD_B = networks.define_D(opt.output_nc, opt.ndf, opt.netD, opt.n_layers_D,
-                                            opt.crop_size, opt.feature_dim, opt.max_conv_dim,
-                                            opt.normD, opt.init_type, opt.init_gain, opt.no_antialias,
-                                            self.gpu_ids, opt)        
-
+        if self.isTrain:     
             self.fake_pool = ImagePool(opt.pool_size)  # create image buffer to store previously generated images
             self.criterionGAN = networks.GANLoss(opt.gan_mode).to(self.device)
             self.nce_layers = [int(i) for i in self.opt.nce_layers.split(',')]
@@ -177,6 +177,8 @@ class CASTModel(BaseModel):
 
         self.real_A_feat = self.netAE(self.real_A, self.real_B)  # G_A(A)
         self.fake_B = self.netDec_B(self.real_A_feat)
+        self.netD.forward(self.real_A, [0,1,2,3])
+
         if self.isTrain: 
             self.real_B_feat = self.netAE(self.real_B, self.real_A)  # G_A(A)
             self.fake_A = self.netDec_A(self.real_B_feat)

@@ -34,7 +34,6 @@ def find_dataset_using_name(dataset_name):
 
     if dataset is None:
         raise NotImplementedError("In %s.py, there should be a subclass of BaseDataset with class name that matches %s in lowercase." % (dataset_filename, target_dataset_name))
-
     return dataset
 
 
@@ -93,6 +92,7 @@ class CustomDatasetDataLoader():
     def __iter__(self):
         """Return a batch of data"""
         for i, data in enumerate(self.dataloader):
+            # print(data)
             if i * self.opt.batch_size >= self.opt.max_dataset_size:
                 break
             yield data

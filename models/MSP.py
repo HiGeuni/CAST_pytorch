@@ -60,7 +60,8 @@ class StyleExtractor(nn.Module):
             func = getattr(self, 'enc_{:d}'.format(i + 1))
             results.append(func(results[-1]))
         return results[1:]
-
+    
+    # index : 0,1,2,3 -> M
     def forward(self, input, index):
         """Standard forward."""
         feats = self.encode_with_intermediate(input)
@@ -74,7 +75,6 @@ class StyleExtractor(nn.Module):
             code = self.relu(conv1x1(code))
             codes.append(code)
         return codes 
-
 
 
 class Projector(nn.Module):

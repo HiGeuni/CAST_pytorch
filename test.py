@@ -25,6 +25,7 @@ if __name__ == '__main__':
 
     for i, data in enumerate(dataset):
         if i == 0:
+            print("regular setup step ###################")
             model.setup(opt)               # regular setup: load and print networks; create schedulers
             model.parallelize()
             if opt.eval:
@@ -32,10 +33,13 @@ if __name__ == '__main__':
         if i >= opt.num_test:  # only apply our model to opt.num_test images.
             break
         model.set_input(data)  # unpack data from data loader
+        # print(data)
+        style_image_path = data["B_paths"][0].split("/")[-1].split(".")[0]
         model.test()           # run inference
         visuals = model.get_current_visuals()  # get image results
         img_path = model.get_image_paths()     # get image paths
+        print("image_path : ", img_path)
         if i % 5 == 0:  # save images to an HTML file
             print('processing (%04d)-th image... %s' % (i, img_path))
-        save_images(webpage, visuals, img_path, width=opt.display_winsize)
+        save_images(webpage, visuals, img_path, width=opt.display_winsize, cnt = style_image_path)
     webpage.save()  # save the HTML

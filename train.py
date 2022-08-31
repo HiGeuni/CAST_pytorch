@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     model = create_model(opt)      # create a model given opt.model and other options
     print('The number of training images = %d' % dataset_size)
-
+    model.print_networks
     visualizer = Visualizer(opt)   # create a visualizer that display/save images and plots
     opt.visualizer = visualizer
     total_iters = 0                # the total number of training iterations

@@ -50,7 +50,7 @@ def get_option_setter(model_name):
     model_class = find_model_using_name(model_name)
     return model_class.modify_commandline_options
 
-
+# default opt.model : cast
 def create_model(opt):
     """Create a model given the option.
 
@@ -62,6 +62,6 @@ def create_model(opt):
         >>> model = create_model(opt)
     """
     model = find_model_using_name(opt.model)
-    instance = model(opt)
+    instance = model(opt) # cast model에 option을 주고 모델을 생성함. cast_models.py 47 line
     print("model [%s] was created" % type(instance).__name__)
     return instance
