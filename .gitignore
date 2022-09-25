@@ -169,3 +169,7 @@ test_images/
 datasets/
 checkpoints/
 *.pth
+
+*.out
+*.csv
+centroids/
